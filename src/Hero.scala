@@ -1,4 +1,3 @@
-package ch.hevs.gdx2d.demos.tilemap.advanced
 
 import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.bitmaps.Spritesheet
@@ -39,25 +38,25 @@ class Hero(initialPosition: Vector2)
   /**
    * The currently selected sprite for animation
    */
-  private[advanced] val textureX = 0
-  private[advanced] var textureY = 1
-  private[advanced] var speed = 1
-  private[advanced] var dt = 0
-  private[advanced] var currentFrame = 0
-  private[advanced] val nFrames = 4
-  final private[advanced] val FRAME_TIME = 0.1f // Duration of each frime
+  private val textureX:Int = 0
+  private var textureY:Int = 1
+  private var speed:Float = 1
+  private var dt:Double = 0
+  private var currentFrame:Int = 0
+  private val nFrames:Int = 4
+  final private val FRAME_TIME:Float = 0.1f // Duration of each frime
 
-  private[advanced] var ss: Spritesheet = null
-  private[advanced] var lastPosition: Vector2 = null
-  private[advanced] var newPosition: Vector2 = null
-  private[advanced] var position: Vector2 = null
-  final private[advanced] val img = new BitmapImage("data/images/pipe.png")
+  private var ss: Spritesheet = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
+  private var lastPosition: Vector2 = new Vector2(initialPosition)
+  private var newPosition: Vector2 = new Vector2(initialPosition)
+  private var position: Vector2 = new Vector2(initialPosition)
+  final private val img = new BitmapImage("data/images/pipe.png")
   private var move = false
 
   /**
    * Create the hero at the start position (0,0)
    */
-  def this {
+  def this() {
     this(new Vector2(0, 0))
   }
 
@@ -86,7 +85,7 @@ class Hero(initialPosition: Vector2)
     position = new Vector2(lastPosition)
     if (isMoving) {
       dt += elapsedTime
-      val alpha = (dt + frameTime * currentFrame) / (frameTime * nFrames)
+      val alpha:Float = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
       position.interpolate(newPosition, alpha, Interpolation.linear)
     }
     else dt = 0
@@ -118,19 +117,19 @@ class Hero(initialPosition: Vector2)
    *
    * @param direction The direction to go.
    */
-  def go(direction: Hero.Direction): Unit = {
+  def go(direction: Hero.Direction.Value): Unit = {
     move = true
     direction match {
-      case RIGHT =>
+      case Hero.Direction.RIGHT =>
         newPosition.add(Hero.SPRITE_WIDTH, 0)
 
-      case LEFT =>
+      case Hero.Direction.LEFT =>
         newPosition.add(-Hero.SPRITE_WIDTH, 0)
 
-      case UP =>
+      case Hero.Direction.UP =>
         newPosition.add(0, Hero.SPRITE_HEIGHT)
 
-      case DOWN =>
+      case Hero.Direction.DOWN =>
         newPosition.add(0, -Hero.SPRITE_HEIGHT)
 
       case _ =>
@@ -144,18 +143,18 @@ class Hero(initialPosition: Vector2)
    *
    * @param direction The direction to turn.
    */
-  def turn(direction: Hero.Direction): Unit = {
+  def turn(direction: Hero.Direction.Value): Unit = {
     direction match {
-      case RIGHT =>
+      case Hero.Direction.RIGHT =>
         textureY = 2
 
-      case LEFT =>
+      case Hero.Direction.LEFT =>
         textureY = 1
 
-      case UP =>
+      case Hero.Direction.UP =>
         textureY = 3
 
-      case DOWN =>
+      case Hero.Direction.DOWN =>
         textureY = 0
 
       case _ =>

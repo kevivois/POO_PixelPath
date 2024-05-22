@@ -22,20 +22,20 @@ object DemoTileAdvanced {
   }
 }
 
-class DemoTileAdvanced extends Nothing {
+class DemoTileAdvanced extends PortableApplication {
   // key management
   private val keyStatus = new util.TreeMap[Integer, Boolean]
   // character
   private var hero: Hero = null
   // tiles management
-  private var tiledMap: Nothing = null
-  private var tiledMapRenderer: Nothing = null
-  private var tiledLayer: Nothing = null
+  private var tiledMap: TiledMap = null
+  private var tiledMapRenderer: TiledMapRenderer = null
+  private var tiledLayer: TiledMapTileLayer = null
   private var zoom = .0
 
   def onInit(): Unit = {
     // Create hero
-    hero = new Nothing(10, 20)
+    hero = new Hero(10, 20)
     // Set initial zoom
     zoom = 1
     // init keys status
@@ -44,9 +44,9 @@ class DemoTileAdvanced extends Nothing {
     keyStatus.put(Input.Keys.LEFT, false)
     keyStatus.put(Input.Keys.RIGHT, false)
     // create map
-    tiledMap = new Nothing().load("data/maps/desert.tmx")
-    tiledMapRenderer = new Nothing(tiledMap)
-    tiledLayer = tiledMap.getLayers.get(0).asInstanceOf[Nothing]
+    tiledMap = new TmxMapLoader().load("data/maps/desert.tmx")
+    tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+    tiledLayer = tiledMap.getLayers.get(0).asInstanceOf[TiledMapTileLayer]
   }
 
   def onGraphicRender(g: GdxGraphics): Unit = {
@@ -54,7 +54,7 @@ class DemoTileAdvanced extends Nothing {
     // Hero activity
     manageHero()
     // Camera follows the hero
-    g.zoom(zoom)
+    g.zoom(zoom.toFloat)
     g.moveCamera(hero.getPosition.x, hero.getPosition.y, tiledLayer.getWidth * tiledLayer.getTileWidth, tiledLayer.getHeight * tiledLayer.getTileHeight)
     // Render the tilemap
     tiledMapRenderer.setView(g.getCamera)
@@ -77,7 +77,7 @@ class DemoTileAdvanced extends Nothing {
    * The number of cells over the given position.
    * @return The tile around the given position | null
    */
-  private def getTile(position: Nothing, offsetX: Int, offsetY: Int) = try {
+  private def getTile(position: Vector2, offsetX: Int, offsetY: Int) = try {
     val x = (position.x / tiledLayer.getTileWidth).asInstanceOf[Int] + offsetX
     val y = (position.y / tiledLayer.getTileHeight).asInstanceOf[Int] + offsetY
     tiledLayer.getCell(x, y).getTile
@@ -93,10 +93,10 @@ class DemoTileAdvanced extends Nothing {
    * The tile to know the property
    * @return true if the property is set to "true", false otherwise
    */
-  private def isWalkable(tile: Nothing): Boolean = {
+  private def isWalkable(tile: TiledMapTile): Boolean = {
     if (tile == null) return false
     val test = tile.getProperties.get("walkable")
-    Boolean.parseBoolean(test.toString)
+    test.toString.toBoolean
   }
 
   /**
@@ -106,9 +106,9 @@ class DemoTileAdvanced extends Nothing {
    * The tile to know the property
    * @return The value of the property
    */
-  private def getSpeed(tile: Nothing) = {
+  private def getSpeed(tile: TiledMapTile) = {
     val test = tile.getProperties.get("speed")
-    Float.parseFloat(test.toString)
+    test.toString.toFloat
   }
 
   /**
@@ -118,7 +118,7 @@ class DemoTileAdvanced extends Nothing {
     // Do nothing if hero is already moving
     if (!hero.isMoving) {
       // Compute direction and next cell
-      var nextCell: Nothing = null
+      var nextCell: TiledMapTile = null
       var goalDirection = Hero.Direction.NULL
       if (keyStatus.get(Input.Keys.RIGHT)) {
         goalDirection = Hero.Direction.RIGHT
@@ -150,12 +150,12 @@ class DemoTileAdvanced extends Nothing {
   }
 
   // Manage keyboard events
-  def onKeyUp(keycode: Int): Unit = {
+  override def onKeyUp(keycode: Int): Unit = {
     super.onKeyUp(keycode)
     keyStatus.put(keycode, false)
   }
 
-  def onKeyDown(keycode: Int): Unit = {
+  override def onKeyDown(keycode: Int): Unit = {
     super.onKeyDown(keycode)
     keycode match {
       case Input.Keys.Z =>
