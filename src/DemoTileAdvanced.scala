@@ -27,17 +27,19 @@ class DemoTileAdvanced extends PortableApplication {
   private val keyStatus = new util.TreeMap[Integer, Boolean]
   // character
   private var hero: Hero = null
-  private var hero2:Hero = null
+
+  private var car:Car = null
   // tiles management
   private var tiledMap: TiledMap = null
   private var tiledMapRenderer: TiledMapRenderer = null
   private var tiledLayer: TiledMapTileLayer = null
   private var zoom = .0
+  private var count:Int = 0
 
   def onInit(): Unit = {
     // Create hero
     hero = new Hero(10, 20)
-    hero2 = new Hero(10, 20)
+    car = new Car(10,20)
     // Set initial zoom
     zoom = 1
     // init keys status
@@ -63,9 +65,9 @@ class DemoTileAdvanced extends PortableApplication {
     tiledMapRenderer.render
     // Draw the hero
     hero.animate(Gdx.graphics.getDeltaTime)
-    hero2.animate(Gdx.graphics.getDeltaTime)
-    hero2.draw(g)
     hero.draw(g)
+    car.animate(Gdx.graphics.getDeltaTime)
+    car.draw(g)
     g.drawFPS
     g.drawSchoolLogo
   }
@@ -150,40 +152,18 @@ class DemoTileAdvanced extends PortableApplication {
         // Face the wall
         hero.turn(goalDirection)
       }
-    }
-
-    if (!hero2.isMoving) {
-      // Compute direction and next cell
-      var nextCell: TiledMapTile = null
-      var goalDirection = Hero.Direction.NULL
-      if (keyStatus.get(Input.Keys.RIGHT)) {
-        goalDirection = Hero.Direction.RIGHT
-        nextCell = getTile(hero2.getPosition, 1, 0)
-      }
-      else if (keyStatus.get(Input.Keys.LEFT)) {
-        goalDirection = Hero.Direction.LEFT
-        nextCell = getTile(hero2.getPosition, -1, 0)
-      }
-      else if (keyStatus.get(Input.Keys.UP)) {
-        goalDirection = Hero.Direction.UP
-        nextCell = getTile(hero2.getPosition, 0, 1)
-      }
-      else if (keyStatus.get(Input.Keys.DOWN)) {
-        goalDirection = Hero.Direction.DOWN
-        nextCell = getTile(hero2.getPosition, 0, -1)
-      }
-      // Is the move valid ?
-      if (isWalkable(nextCell)) {
-        // Go
-        hero2.setSpeed(getSpeed(nextCell))
-        hero2.go(goalDirection)
-      }
-      else {
-        // Face the wall
-        hero2.turn(goalDirection)
+      if (count == 1000) {
+        count = 0
+        var nextCell = getTile(car.getPosition, offsetX = 1, offsetY = 0)
+        if (isWalkable(nextCell)) {
+          car.setSpeed(getSpeed(nextCell))
+          car.go(Car.Direction.LEFT)
+        }
+      }else{
+        count+=1
       }
     }
-  }
+    }
 
   // Manage keyboard events
   override def onKeyUp(keycode: Int): Unit = {
