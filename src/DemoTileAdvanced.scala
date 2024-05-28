@@ -39,7 +39,7 @@ class DemoTileAdvanced extends PortableApplication {
   def onInit(): Unit = {
     // Create hero
     hero = new Hero(10, 20)
-    car = new Car(10,20)
+    car = new SimpleCar(10,20)
     // Set initial zoom
     zoom = 1
     // init keys status
@@ -152,15 +152,36 @@ class DemoTileAdvanced extends PortableApplication {
         // Face the wall
         hero.turn(goalDirection)
       }
-      if (count == 1000) {
-        count = 0
-        var nextCell = getTile(car.getPosition, offsetX = 1, offsetY = 0)
-        if (isWalkable(nextCell)) {
-          car.setSpeed(getSpeed(nextCell))
-          car.go(Car.Direction.LEFT)
-        }
-      }else{
-        count+=1
+    }
+    if (!car.isMoving) {
+      // Compute direction and next cell
+      var nextCell: TiledMapTile = null
+      var goalDirection = Car.Direction.NULL
+      if (keyStatus.get(Input.Keys.RIGHT)) {
+        goalDirection = Car.Direction.RIGHT
+        nextCell = getTile(car.getPosition, 1, 0)
+      }
+      else if (keyStatus.get(Input.Keys.LEFT)) {
+        goalDirection = Car.Direction.LEFT
+        nextCell = getTile(car.getPosition, -1, 0)
+      }
+      else if (keyStatus.get(Input.Keys.UP)) {
+        goalDirection = Car.Direction.UP
+        nextCell = getTile(car.getPosition, 0, 1)
+      }
+      else if (keyStatus.get(Input.Keys.DOWN)) {
+        goalDirection = Car.Direction.DOWN
+        nextCell = getTile(car.getPosition, 0, -1)
+      }
+      // Is the move valid ?
+      if (isWalkable(nextCell)) {
+        // Go
+        car.setSpeed(getSpeed(nextCell))
+        car.go(goalDirection)
+      }
+      else {
+        // Face the wall
+        car.turn(goalDirection)
       }
     }
     }

@@ -2,9 +2,13 @@
 import ch.hevs.gdx2d.components.bitmaps.{BitmapImage, Spritesheet}
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.{Pixmap, Texture}
+import com.badlogic.gdx.graphics.g2d.{Sprite, SpriteBatch, TextureRegion}
 import com.badlogic.gdx.math.{Interpolation, Vector2}
+
+import java.awt.Image
+import java.awt.image.{BufferedImage, Raster}
+import java.io.ByteArrayInputStream
 
 
 /**
@@ -23,7 +27,7 @@ object Car {
   private val SPRITE_HEIGHT = 32
 }
 
-class Car(initialPosition: Vector2)
+class Car(initialPosition: Vector2,imageFile:String)
 
 /**
  * Create the Car at the start position
@@ -34,7 +38,8 @@ class Car(initialPosition: Vector2)
   lastPosition = new Vector2(initialPosition)
   newPosition = new Vector2(initialPosition)
   position = new Vector2(initialPosition)
-  ss = new Spritesheet("data/images/lumberjack_sheet32.png", Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT)
+  var rotation_angle = 0
+  private var car_bitmap = new BitmapImage(imageFile)
   /**
    * The currently selected sprite for animation
    */
@@ -46,7 +51,6 @@ class Car(initialPosition: Vector2)
   private val nFrames:Int = 4
   final private val FRAME_TIME:Float = 0.1f // Duration of each frime
 
-  private var ss: Spritesheet = new Spritesheet("data/images/lumberjack_sheet32.png", Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT)
   private var lastPosition: Vector2 = new Vector2(initialPosition)
   private var newPosition: Vector2 = new Vector2(initialPosition)
   private var position: Vector2 = new Vector2(initialPosition)
@@ -56,9 +60,6 @@ class Car(initialPosition: Vector2)
   /**
    * Create the Car at the start position (0,0)
    */
-  def this() {
-    this(new Vector2(0, 0))
-  }
 
   /**
    * Create the Car at the given start tile.
@@ -66,8 +67,8 @@ class Car(initialPosition: Vector2)
    * @param x Column
    * @param y Line
    */
-  def this(x: Int, y: Int) {
-    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y))
+  def this(x: Int, y: Int,imageFile:String) {
+    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y),imageFile)
   }
 
   /**
@@ -146,15 +147,18 @@ class Car(initialPosition: Vector2)
   def turn(direction: Car.Direction.Value): Unit = {
     direction match {
       case Car.Direction.RIGHT =>
-        textureY = 2
-
+        rotation_angle = 0
+        textureY=2
       case Car.Direction.LEFT =>
+        rotation_angle = 180
         textureY = 1
 
       case Car.Direction.UP =>
+        rotation_angle = 90
         textureY = 3
 
       case Car.Direction.DOWN =>
+        rotation_angle = 270
         textureY = 0
 
       case _ =>
@@ -168,7 +172,6 @@ class Car(initialPosition: Vector2)
    * @param g Graphic object.
    */
   override def draw(g: GdxGraphics): Unit = {
-    var b = new Texture("data/images/characters/car/Blackout.png")
-    g.draw(b, position.x, position.y)
+    g.drawTransformedPicture(position.x, position.y, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, rotation_angle, 1.0f,car_bitmap)
   }
 }
