@@ -3,9 +3,12 @@ import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.maps.tiled._
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.{Vector2, Vector3}
+
 import java.util
 
 
@@ -53,14 +56,37 @@ class DemoTileAdvanced extends PortableApplication {
     tiledLayer = tiledMap.getLayers.get(0).asInstanceOf[TiledMapTileLayer]
   }
 
+
+  def extendLayer(layer:TiledMapTileLayer,deltaX:Int,deltay:Int):TiledMapTileLayer = {
+    var newLayer = new TiledMapTileLayer(layer.getWidth+deltaX,layer.getHeight+deltay,tiledLayer.getTileWidth.toInt,tiledLayer.getTileHeight.toInt)
+    for(x:Int <- 0 until layer.getWidth;y:Int <- 0 until layer.getHeight){
+      newLayer.setCell(x,y,layer.getCell(x,y))
+    }
+    return newLayer
+  }
   def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear
-    // Hero activity
+    var borderTopCell = getTile(hero.getPosition,0,7)
+    if(g.getCamera.position.y + g.getScreenHeight / 2 - 5 <= tiledLayer.getHeight * tiledLayer.getTileHeight)
+    {
+      var cell: TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
+      var tile:TiledMapTile = tiledMap.getTileSets.getTile(5)
+      tile.getProperties.put("walkable",true)
+      tile.getProperties.put("speed","1.5")
+      cell.setTile(tile)
+      tiledLayer = extendLayer(tiledLayer,0,1)
+      for (x <- 0 until tiledLayer.getWidth) {
+       tiledLayer.setCell(x,tiledLayer.getHeight-1,cell)
+      }
+      tiledMap.getLayers.remove(0)
+      tiledMap.getLayers.add(tiledLayer)
+      tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+    }
+
     manageHero()
     // Camera follows the hero
-    g.zoom(zoom.toFloat)
+    g.zoom(1)
     g.moveCamera(hero.getPosition.x, hero.getPosition.y, tiledLayer.getWidth * tiledLayer.getTileWidth, tiledLayer.getHeight * tiledLayer.getTileHeight)
-    // Render the tilemap
     tiledMapRenderer.setView(g.getCamera)
     tiledMapRenderer.render
     // Draw the hero
@@ -70,6 +96,14 @@ class DemoTileAdvanced extends PortableApplication {
     car.draw(g)
     g.drawFPS
     g.drawSchoolLogo
+    //println(f"${g.getCamera.position.y} + ${g.getScreenHeight/2 -5} <= ${tiledLayer.getHeight * tiledLayer.getTileHeight}")
+  }
+  def is_out_of_screen_y(g:GdxGraphics,posy:Float):Boolean = {
+    return math.sqrt(math.pow(posy-g.getCamera.position.y,2)) >=285
+  }
+
+  def is_out_of_screen_x(g: GdxGraphics, posx: Float): Boolean = {
+    return math.sqrt(math.pow(posx - g.getCamera.position.x, 2)) > 285
   }
 
   /**
@@ -142,7 +176,6 @@ class DemoTileAdvanced extends PortableApplication {
         goalDirection = Hero.Direction.DOWN
         nextCell = getTile(hero.getPosition, 0, -1)
       }
-      // Is the move valid ?
       if (isWalkable(nextCell)) {
         // Go
         hero.setSpeed(getSpeed(nextCell))
@@ -173,7 +206,6 @@ class DemoTileAdvanced extends PortableApplication {
         goalDirection = Car.Direction.DOWN
         nextCell = getTile(car.getPosition, 0, -1)
       }
-      // Is the move valid ?
       if (isWalkable(nextCell)) {
         // Go
         car.setSpeed(getSpeed(nextCell))

@@ -20,7 +20,7 @@ object Hero {
   }
 
   private val SPRITE_WIDTH = 32
-  private val SPRITE_HEIGHT = 32
+  val SPRITE_HEIGHT = 32
 }
 
 class Hero(initialPosition: Vector2)

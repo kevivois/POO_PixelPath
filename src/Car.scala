@@ -22,6 +22,7 @@ object Car {
     type Direction = Value
     val UP, DOWN, RIGHT, LEFT, NULL = Value
   }
+  val FILEPATH = ""
 
   private val SPRITE_WIDTH = 32
   private val SPRITE_HEIGHT = 32
@@ -172,6 +173,6 @@ class Car(initialPosition: Vector2,imageFile:String)
    * @param g Graphic object.
    */
   override def draw(g: GdxGraphics): Unit = {
-    g.drawTransformedPicture(position.x, position.y, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, rotation_angle, 1.0f,car_bitmap)
+    g.drawTransformedPicture(position.x+Car.SPRITE_WIDTH/2, position.y+Car.SPRITE_HEIGHT/2, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, rotation_angle, 1.0f,car_bitmap)
   }
 }
