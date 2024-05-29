@@ -46,7 +46,7 @@ class DemoTileAdvanced extends PortableApplication {
     keyStatus.put(Input.Keys.LEFT, false)
     keyStatus.put(Input.Keys.RIGHT, false)
     // create map
-    tiledMap = new TmxMapLoader().load("data/maps/desert.tmx")
+    tiledMap = new TmxMapLoader().load("data/maps/pixelPathMap.tmx")
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
     tiledLayer = tiledMap.getLayers.get(0).asInstanceOf[TiledMapTileLayer]
   }
