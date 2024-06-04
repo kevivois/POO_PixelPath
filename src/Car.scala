@@ -5,8 +5,7 @@ import ch.hevs.gdx2d.lib.interfaces.DrawableObject
 import com.badlogic.gdx.graphics.{Pixmap, Texture}
 import com.badlogic.gdx.graphics.g2d.{Sprite, SpriteBatch, TextureRegion}
 import com.badlogic.gdx.math.{Interpolation, Vector2}
-
-import java.awt.Image
+import com.badlogic.gdx.graphics.Color
 import java.awt.image.{BufferedImage, Raster}
 import java.io.ByteArrayInputStream
 
@@ -24,7 +23,7 @@ object Car {
   }
   val FILEPATH = ""
 
-   val SPRITE_WIDTH = 32
+   val SPRITE_WIDTH = 50
    val SPRITE_HEIGHT = 32
 }
 
@@ -191,6 +190,7 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
    * @param g Graphic object.
    */
   override def draw(g: GdxGraphics): Unit = {
+    g.drawRectangle(position.x+Car.SPRITE_WIDTH.toFloat/2,position.y+Car.SPRITE_HEIGHT.toFloat/2,Car.SPRITE_WIDTH.toFloat,Car.SPRITE_HEIGHT.toFloat,0.toFloat)
     g.drawTransformedPicture(position.x+Car.SPRITE_WIDTH/2, position.y+Car.SPRITE_HEIGHT/2, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, rotation_angle, 1.0f,car_bitmap)
   }
 }

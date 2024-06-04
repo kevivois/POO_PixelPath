@@ -1,5 +1,8 @@
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
+import com.badlogic.gdx.maps.tiled.{TiledMapTile, TiledMapTileLayer, TiledMapTileSet}
 import com.badlogic.gdx.math.Vector2
+
+import java.awt.Rectangle
+import scala.collection.mutable.ArrayBuffer
 
 object LayerHelper {
 
@@ -18,6 +21,23 @@ object LayerHelper {
   } catch {
     case e: Exception =>
       null
+  }
+
+  def get_grass_tiles_of_length(tileSet:TiledMapTileSet,length:Int):ArrayBuffer[TiledMapTile] = {
+    var grass_tile = tileSet.getTile(876)
+    var out:ArrayBuffer[TiledMapTile] = new ArrayBuffer[TiledMapTile]()
+    for(i <- 0 until length){
+      out.append(grass_tile)
+    }
+    out
+  }
+
+  def checkOverlap(r1: Rectangle, r2: Rectangle,delta:Int=0): Boolean = {
+    return !(r1.x + r1.width -delta < r2.x || r1.y + r1.height -delta < r2.y || r1.x - delta > r2.x + r2.width || r1.y + delta > r2.y + r2.height);
+  }
+
+  def getRectangle(x: Int, y: Int, width: Int, height: Int): Rectangle = {
+    return new Rectangle(x, y, width, height)
   }
 
 }

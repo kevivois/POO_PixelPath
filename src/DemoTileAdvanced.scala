@@ -10,8 +10,10 @@ import com.badlogic.gdx.maps.tiled._
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.{Vector2, Vector3}
 
+import java.awt.Rectangle
 import java.util
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 
 /**
@@ -39,6 +41,7 @@ class DemoTileAdvanced extends PortableApplication {
   private var tiledSet:TiledMapTileSet = null
   private var zoom = .0
   private var roads:ArrayBuffer[Road] =null
+  private var count:Int = 0
 
   def onInit(): Unit = {
     // Create hero
@@ -70,24 +73,29 @@ class DemoTileAdvanced extends PortableApplication {
   }
 
   def onGraphicRender(g: GdxGraphics): Unit = {
-    g.clear
-
+    g.clear()
     if(g.getCamera.position.y + g.getScreenHeight / 2 == tiledLayer.getHeight * tiledLayer.getTileHeight)
     {
-      var cell: TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
-      // generate random cell
-      var tile:TiledMapTile = tiledMap.getTileSets.getTile(5)
-      // generate ranom cell when no more map to show
-      tile.getProperties.put("walkable",true)
-      tile.getProperties.put("speed","1.5")
-      cell.setTile(tile)
-
-
-      var new_road = new Road((g.getCamera.position.x-tiledLayer.getWidth/2).toInt,tiledLayer.getHeight-1,tiledSet,tiledLayer,5)
+      val new_road = new Road((g.getCamera.position.x-tiledLayer.getWidth/2).toInt,tiledLayer.getHeight-1,tiledSet,tiledLayer)
       tiledLayer = new_road.extendLayer()
       new_road.add_to_layer()
       new_road.start()
       roads.addOne(new_road)
+
+      // add grass
+
+      var grass_length_random = Random.between(1, 4)
+      for(i:Int <- 0 until grass_length_random){
+        tiledLayer = LayerHelper.extendLayer(tiledLayer, 0, 1)
+        var grass_tile = tiledSet.getTile(836)
+        for(x:Int <- 0 until tiledLayer.getWidth;y:Int <- tiledLayer.getHeight-1 until tiledLayer.getHeight ){
+          var new_cell = new TiledMapTileLayer.Cell()
+          new_cell.setTile(grass_tile)
+          new_cell.getTile.getProperties.put("walkable",true)
+          tiledLayer.setCell(x,y,new_cell)
+        }
+      }
+
       tiledMap.getLayers.remove(0)
       tiledMap.getLayers.add(tiledLayer)
       tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
@@ -98,16 +106,17 @@ class DemoTileAdvanced extends PortableApplication {
     g.zoom(1)
     g.moveCamera(hero.getPosition.x, hero.getPosition.y, tiledLayer.getWidth * tiledLayer.getTileWidth, tiledLayer.getHeight * tiledLayer.getTileHeight)
     tiledMapRenderer.setView(g.getCamera)
-    tiledMapRenderer.render
+    tiledMapRenderer.render()
     // Draw the hero
     hero.animate(Gdx.graphics.getDeltaTime)
     hero.draw(g)
 
     for (road <- roads) {
       road.drawCars(g)
+      road.is_touching(hero.getPosition,Hero.SPRITE_WIDTH,Hero.SPRITE_HEIGHT)
     }
-    g.drawFPS
-    g.drawSchoolLogo
+    g.drawFPS()
+    g.drawSchoolLogo()
   }
 
   /**
@@ -142,6 +151,7 @@ class DemoTileAdvanced extends PortableApplication {
     val test = tile.getProperties.get("walkable")
     test.toString.toBoolean
   }
+
 
   /**
    * Manage the movements of the hero using the keyboard.

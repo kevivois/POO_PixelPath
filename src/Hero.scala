@@ -19,7 +19,7 @@ object Hero {
     val UP, DOWN, RIGHT, LEFT, NULL = Value
   }
 
-  private val SPRITE_WIDTH = 32
+  val SPRITE_WIDTH = 32
   val SPRITE_HEIGHT = 32
 }
 
@@ -168,6 +168,7 @@ class Hero(initialPosition: Vector2,spd:Float=1)
    * @param g Graphic object.
    */
   override def draw(g: GdxGraphics): Unit = {
+    g.drawRectangle(position.x+Hero.SPRITE_WIDTH/2,position.y+Hero.SPRITE_HEIGHT/2,Hero.SPRITE_WIDTH.toFloat,Hero.SPRITE_HEIGHT.toFloat,0)
     g.draw(ss.sprites(textureY)(currentFrame), position.x, position.y)
   }
 }
