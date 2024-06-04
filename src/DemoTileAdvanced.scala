@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.{Vector2, Vector3}
 
 import java.util
+import scala.collection.mutable.ArrayBuffer
 
 
 /**
@@ -31,19 +32,17 @@ class DemoTileAdvanced extends PortableApplication {
   private val keyStatus = new util.TreeMap[Integer, Boolean]
   // character
   private var hero: Hero = null
-
-  private var car:Car = null
   // tiles management
   private var tiledMap: TiledMap = null
   private var tiledMapRenderer: TiledMapRenderer = null
   private var tiledLayer: TiledMapTileLayer = null
-  tiledLayer.getCell(0,0).getTile
+  private var tiledSet:TiledMapTileSet = null
   private var zoom = .0
+  private var roads:ArrayBuffer[Road] =null
 
   def onInit(): Unit = {
     // Create hero
     hero = new Hero(10,0)
-    car = new SimpleCar(10,20)
     // Set initial zoom
     zoom = 1
     // init keys status
@@ -56,6 +55,8 @@ class DemoTileAdvanced extends PortableApplication {
     tiledMap = new TmxMapLoader().load("data/maps/pixelPathMap.tmx")
     tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
     tiledLayer = tiledMap.getLayers.get(0).asInstanceOf[TiledMapTileLayer]
+    tiledSet = tiledMap.getTileSets.getTileSet(1)
+    roads = new ArrayBuffer[Road]()
     initCells()
   }
   def initCells():Unit = {
@@ -68,14 +69,6 @@ class DemoTileAdvanced extends PortableApplication {
     }
   }
 
-
-  def extendLayer(layer:TiledMapTileLayer,deltaX:Int,deltay:Int):TiledMapTileLayer = {
-    var newLayer = new TiledMapTileLayer(layer.getWidth+deltaX,layer.getHeight+deltay,tiledLayer.getTileWidth.toInt,tiledLayer.getTileHeight.toInt)
-    for(x:Int <- 0 until layer.getWidth;y:Int <- 0 until layer.getHeight){
-      newLayer.setCell(x,y,layer.getCell(x,y))
-    }
-    return newLayer
-  }
   def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear
 
@@ -88,10 +81,13 @@ class DemoTileAdvanced extends PortableApplication {
       tile.getProperties.put("walkable",true)
       tile.getProperties.put("speed","1.5")
       cell.setTile(tile)
-      tiledLayer = extendLayer(tiledLayer,0,1)
-      for (x <- 0 until tiledLayer.getWidth) {
-       tiledLayer.setCell(x,tiledLayer.getHeight-1,cell)
-      }
+
+
+      var new_road = new Road((g.getCamera.position.x-tiledLayer.getWidth/2).toInt,tiledLayer.getHeight-1,tiledSet,tiledLayer,5)
+      tiledLayer = new_road.extendLayer()
+      new_road.add_to_layer()
+      new_road.start()
+      roads.addOne(new_road)
       tiledMap.getLayers.remove(0)
       tiledMap.getLayers.add(tiledLayer)
       tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
@@ -106,17 +102,12 @@ class DemoTileAdvanced extends PortableApplication {
     // Draw the hero
     hero.animate(Gdx.graphics.getDeltaTime)
     hero.draw(g)
-    car.animate(Gdx.graphics.getDeltaTime)
-    car.draw(g)
+
+    for (road <- roads) {
+      road.drawCars(g)
+    }
     g.drawFPS
     g.drawSchoolLogo
-  }
-  def is_out_of_screen_y(g:GdxGraphics,posy:Float):Boolean = {
-    return math.sqrt(math.pow(posy-g.getCamera.position.y,2)) >=285
-  }
-
-  def is_out_of_screen_x(g: GdxGraphics, posx: Float): Boolean = {
-    return math.sqrt(math.pow(posx - g.getCamera.position.x, 2)) > 285
   }
 
   /**
@@ -153,18 +144,6 @@ class DemoTileAdvanced extends PortableApplication {
   }
 
   /**
-   * Get the "speed" property of the given tile.
-   *
-   * @param tile
-   * The tile to know the property
-   * @return The value of the property
-   */
-  private def getSpeed(tile: TiledMapTile) = {
-    val test = tile.getProperties.get("speed")
-    test.toString.toFloat
-  }
-
-  /**
    * Manage the movements of the hero using the keyboard.
    */
   private def manageHero(): Unit = {
@@ -189,45 +168,13 @@ class DemoTileAdvanced extends PortableApplication {
         goalDirection = Hero.Direction.DOWN
         nextCell = getTile(hero.getPosition, 0, -1)
       }
-      println(nextCell,goalDirection)
       if (isWalkable(nextCell)) {
         // God
-        hero.setSpeed(getSpeed(nextCell))
         hero.go(goalDirection)
       }
       else {
         // Face the wall
         hero.turn(goalDirection)
-      }
-    }
-    if (!car.isMoving) {
-      // Compute direction and next cell
-      var nextCell: TiledMapTile = null
-      var goalDirection = Car.Direction.NULL
-      if (keyStatus.get(Input.Keys.RIGHT)) {
-        goalDirection = Car.Direction.RIGHT
-        nextCell = getTile(car.getPosition, 1, 0)
-      }
-      else if (keyStatus.get(Input.Keys.LEFT)) {
-        goalDirection = Car.Direction.LEFT
-        nextCell = getTile(car.getPosition, -1, 0)
-      }
-      else if (keyStatus.get(Input.Keys.UP)) {
-        goalDirection = Car.Direction.UP
-        nextCell = getTile(car.getPosition, 0, 1)
-      }
-      else if (keyStatus.get(Input.Keys.DOWN)) {
-        goalDirection = Car.Direction.DOWN
-        nextCell = getTile(car.getPosition, 0, -1)
-      }
-      if (isWalkable(nextCell)) {
-        // Go
-        car.setSpeed(getSpeed(nextCell))
-        car.go(goalDirection)
-      }
-      else {
-        // Face the wall
-        car.turn(goalDirection)
       }
     }
     }

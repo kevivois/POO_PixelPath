@@ -24,11 +24,11 @@ object Car {
   }
   val FILEPATH = ""
 
-  private val SPRITE_WIDTH = 32
-  private val SPRITE_HEIGHT = 32
+   val SPRITE_WIDTH = 32
+   val SPRITE_HEIGHT = 32
 }
 
-class Car(initialPosition: Vector2,imageFile:String,speed:Double=1.5)
+class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirection:Int=1)
 
 /**
  * Create the Car at the start position
@@ -46,7 +46,7 @@ class Car(initialPosition: Vector2,imageFile:String,speed:Double=1.5)
    */
   private val textureX:Int = 0
   private var textureY:Int = 1
-  private var speed:Float = speed
+  private var speed:Float = sp.toFloat
   private var dt:Double = 0
   private var currentFrame:Int = 0
   private val nFrames:Int = 4
@@ -57,6 +57,7 @@ class Car(initialPosition: Vector2,imageFile:String,speed:Double=1.5)
   private var position: Vector2 = new Vector2(initialPosition)
   final private val img = new BitmapImage("data/images/pipe.png")
   private var move = false
+  var direction = initialDirection
 
   /**
    * Create the Car at the start position (0,0)
@@ -68,14 +69,31 @@ class Car(initialPosition: Vector2,imageFile:String,speed:Double=1.5)
    * @param x Column
    * @param y Line
    */
-  def this(x: Int, y: Int,imageFile:String) {
-    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y),imageFile)
+  def this(x: Int, y: Int,imageFile:String,initialDirection:Int) {
+    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y),imageFile,initialDirection)
+  }
+
+  def this(x: Int, y: Int, imageFile: String) {
+    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y), imageFile)
+  }
+
+  def this(x: Int, y: Int, imageFile: String, speed: Double) {
+    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y), imageFile, speed)
+  }
+
+  def this(x: Int, y: Int, imageFile: String, speed: Double,initialDirection:Int) {
+    this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y), imageFile, speed,initialDirection)
   }
 
   /**
    * @return the current position of the Car on the map.
    */
   def getPosition: Vector2 = this.position
+
+  def setPosition(new_vector:Vector2):Unit = {
+    this.lastPosition = new_vector
+    this.newPosition = new_vector
+  }
 
   /**
    * Update the position and the texture of the Car.

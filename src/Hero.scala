@@ -23,7 +23,7 @@ object Hero {
   val SPRITE_HEIGHT = 32
 }
 
-class Hero(initialPosition: Vector2)
+class Hero(initialPosition: Vector2,spd:Float=1)
 
 /**
  * Create the hero at the start position
@@ -40,7 +40,7 @@ class Hero(initialPosition: Vector2)
    */
   private val textureX:Int = 0
   private var textureY:Int = 1
-  private var speed:Float = 1
+  private var speed:Float = spd
   private var dt:Double = 0
   private var currentFrame:Int = 0
   private val nFrames:Int = 4
