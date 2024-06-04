@@ -28,7 +28,7 @@ object Car {
   private val SPRITE_HEIGHT = 32
 }
 
-class Car(initialPosition: Vector2,imageFile:String)
+class Car(initialPosition: Vector2,imageFile:String,speed:Double=1.5)
 
 /**
  * Create the Car at the start position
@@ -46,7 +46,7 @@ class Car(initialPosition: Vector2,imageFile:String)
    */
   private val textureX:Int = 0
   private var textureY:Int = 1
-  private var speed:Float = 1
+  private var speed:Float = speed
   private var dt:Double = 0
   private var currentFrame:Int = 0
   private val nFrames:Int = 4
