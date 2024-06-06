@@ -14,9 +14,9 @@ object LayerHelper {
     return newLayer
   }
 
-    def getTile(position: Vector2, offsetX: Int, offsetY: Int,tiledLayer:TiledMapTileLayer) = try {
-    val x = (position.x / tiledLayer.getTileWidth).asInstanceOf[Int] + offsetX
-    val y = (position.y / tiledLayer.getTileHeight).asInstanceOf[Int] + offsetY
+    def getTile(position: Vector2, offsetX: Int, offsetY: Int,tiledLayer:TiledMapTileLayer,tileWidth:Int,tileHeight:Int) = try {
+    val x = (position.x / tileWidth).asInstanceOf[Int] + offsetX
+    val y = (position.y / tileHeight).asInstanceOf[Int] + offsetY
     tiledLayer.getCell(x, y).getTile
   } catch {
     case e: Exception =>
@@ -33,7 +33,7 @@ object LayerHelper {
   }
 
   def checkOverlap(r1: Rectangle, r2: Rectangle,delta:Int=0): Boolean = {
-    return !(r1.x + r1.width -delta < r2.x || r1.y + r1.height -delta < r2.y || r1.x - delta > r2.x + r2.width || r1.y + delta > r2.y + r2.height);
+    return !(r1.x + r1.width - delta < r2.x || r1.y + r1.height -delta < r2.y || r1.x - delta > r2.x + r2.width || r1.y + delta > r2.y + r2.height);
   }
 
   def getRectangle(x: Int, y: Int, width: Int, height: Int): Rectangle = {

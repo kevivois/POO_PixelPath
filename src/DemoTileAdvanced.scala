@@ -29,7 +29,7 @@ object DemoTileAdvanced {
   }
 }
 
-class DemoTileAdvanced extends PortableApplication {
+class DemoTileAdvanced extends PortableApplication(1100,400) {
   // key management
   private val keyStatus = new util.TreeMap[Integer, Boolean]
   // character
@@ -44,9 +44,7 @@ class DemoTileAdvanced extends PortableApplication {
   private var count:Int = 0
 
   def onInit(): Unit = {
-    // Create hero
-    hero = new Hero(10,0)
-    // Set initial zoom
+
     zoom = 1
     // init keys status
     keyStatus.put(Input.Keys.UP, false)
@@ -60,6 +58,9 @@ class DemoTileAdvanced extends PortableApplication {
     tiledLayer = tiledMap.getLayers.get(0).asInstanceOf[TiledMapTileLayer]
     tiledSet = tiledMap.getTileSets.getTileSet(1)
     roads = new ArrayBuffer[Road]()
+
+    hero = new Hero(tiledLayer.getWidth/2,0)
+
     initCells()
   }
   def initCells():Unit = {

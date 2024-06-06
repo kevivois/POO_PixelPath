@@ -23,7 +23,7 @@ object Car {
   }
   val FILEPATH = ""
 
-   val SPRITE_WIDTH = 50
+   val SPRITE_WIDTH = 64
    val SPRITE_HEIGHT = 32
 }
 
@@ -43,13 +43,11 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
   /**
    * The currently selected sprite for animation
    */
-  private val textureX:Int = 0
-  private var textureY:Int = 1
   private var speed:Float = sp.toFloat
   private var dt:Double = 0
   private var currentFrame:Int = 0
   private val nFrames:Int = 4
-  final private val FRAME_TIME:Float = 0.1f // Duration of each frime
+  final private val FRAME_TIME:Float = 0.1f// Duration of each frame
 
   private var lastPosition: Vector2 = new Vector2(initialPosition)
   private var newPosition: Vector2 = new Vector2(initialPosition)
@@ -90,7 +88,8 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
   def getPosition: Vector2 = this.position
 
   def setPosition(new_vector:Vector2):Unit = {
-    this.lastPosition = new_vector
+    move = true
+    this.lastPosition = new Vector2(new_vector.x-(direction*Car.SPRITE_WIDTH),new_vector.y)
     this.newPosition = new_vector
   }
 
@@ -104,7 +103,7 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
     position = new Vector2(lastPosition)
     if (isMoving) {
       dt += elapsedTime
-      val alpha:Float = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
+      val alpha: Float = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
       position.interpolate(newPosition, alpha, Interpolation.linear)
     }
     else dt = 0
@@ -118,6 +117,7 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
       }
     }
   }
+
 
   /**
    * @return True if the Car is actually doing a step.
@@ -141,43 +141,19 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
     direction match {
       case Car.Direction.RIGHT =>
         newPosition.add(Car.SPRITE_WIDTH, 0)
+        rotation_angle = 0
 
       case Car.Direction.LEFT =>
         newPosition.add(-Car.SPRITE_WIDTH, 0)
+        rotation_angle = 180
 
       case Car.Direction.UP =>
         newPosition.add(0, Car.SPRITE_HEIGHT)
+        rotation_angle = 90
 
       case Car.Direction.DOWN =>
         newPosition.add(0, -Car.SPRITE_HEIGHT)
-
-      case _ =>
-
-    }
-    turn(direction)
-  }
-
-  /**
-   * Turn the Car on the given direction without do any step.
-   *
-   * @param direction The direction to turn.
-   */
-  def turn(direction: Car.Direction.Value): Unit = {
-    direction match {
-      case Car.Direction.RIGHT =>
-        rotation_angle = 0
-        textureY=2
-      case Car.Direction.LEFT =>
-        rotation_angle = 180
-        textureY = 1
-
-      case Car.Direction.UP =>
-        rotation_angle = 90
-        textureY = 3
-
-      case Car.Direction.DOWN =>
         rotation_angle = 270
-        textureY = 0
 
       case _ =>
 
@@ -190,7 +166,8 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
    * @param g Graphic object.
    */
   override def draw(g: GdxGraphics): Unit = {
-    g.drawRectangle(position.x+Car.SPRITE_WIDTH.toFloat/2,position.y+Car.SPRITE_HEIGHT.toFloat/2,Car.SPRITE_WIDTH.toFloat,Car.SPRITE_HEIGHT.toFloat,0.toFloat)
-    g.drawTransformedPicture(position.x+Car.SPRITE_WIDTH/2, position.y+Car.SPRITE_HEIGHT/2, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, rotation_angle, 1.0f,car_bitmap)
+      println(position)
+      g.drawRectangle(position.x + Car.SPRITE_WIDTH / 2.0f, position.y + Car.SPRITE_HEIGHT / 2.0f, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, 0)
+      g.drawTransformedPicture(position.x + Car.SPRITE_WIDTH / 2.0f, position.y + Car.SPRITE_HEIGHT / 2.0f, Car.SPRITE_WIDTH/2.0f, Car.SPRITE_HEIGHT, rotation_angle, 1.0f, car_bitmap)
   }
 }

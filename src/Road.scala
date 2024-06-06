@@ -83,15 +83,26 @@ class Road(x:Int,y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
     }
   }
   def init_car():Unit = {
-    var rdm = Random.between(0,2)
-    var rdm_speed = 0.5
-    var car:SimpleCar = new SimpleCar(0,y+1,rdm_speed,1)
+    var rdm_y_1 = Random.between(y+1,y+3)
+    var rdm_y_2 = if(rdm_y_1 == y+1) y+2 else y+1
+    var rdm_car = Random.between(0,2)
+    var rdm_speed = Random.between(1,6)
+    var car:SimpleCar = new SimpleCar(0,rdm_y_1,rdm_speed,1)
     cars.addOne(car)
+    if(rdm_car == 1) {
+      rdm_speed = Random.between(1,6)
+      car = new SimpleCar(layer.getWidth, rdm_y_2, rdm_speed, -1)
+      cars.addOne(car)
+    }
+
+    /*
     if(rdm == 1){
       rdm_speed = 0.5
       var car:SimpleCar = new SimpleCar(layer.getWidth-1,y+2,rdm_speed,-1)
       cars.addOne(car)
     }
+    */
+
   }
 
   private def animate_car(car:Car,g: GdxGraphics):Unit = {
@@ -99,32 +110,30 @@ class Road(x:Int,y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
     car.animate(Gdx.graphics.getDeltaTime)
   }
   def drawCars(g: GdxGraphics):Unit = {
-    if(is_started){
-      for(car <- cars){
-        if(!car.isMoving){
-          if(car.direction == 1){
-            var nextTile = LayerHelper.getTile(car.getPosition,car.direction,0,layer)
-            if (nextTile == null) {
+    if (is_started) {
+      for (car <- cars) {
+        if (!car.isMoving) {
+          if (car.direction == 1) {
+            //var nextTile = LayerHelper.getTile(car.getPosition, car.direction, 0, layer,Car.SPRITE_WIDTH,Car.SPRITE_HEIGHT)
+            if (car.getPosition.x == (layer.getWidth*layer.getTileWidth)) {
               car.setPosition(new Vector2(-Car.SPRITE_WIDTH, car.getPosition.y))
               animate_car(car, g)
               return
             }
             car.go(Car.Direction.RIGHT)
           }
-          if(car.direction == -1){
-            var nextTile = LayerHelper.getTile(car.getPosition,car.direction,0,layer)
-            if (nextTile == null) {
-              car.setPosition(new Vector2((layer.getWidth*layer.getTileWidth)-1, car.getPosition.y))
+          if (car.direction == -1) {
+            //var nextTile = LayerHelper.getTile(car.getPosition, car.direction, 0, layer,Car.SPRITE_WIDTH,Car.SPRITE_HEIGHT)
+            if (car.getPosition.x+Car.SPRITE_WIDTH <= 0) {
+              car.setPosition(new Vector2((layer.getWidth * layer.getTileWidth) - 1, car.getPosition.y))
               animate_car(car, g)
               return
             }
             car.go(Car.Direction.LEFT)
           }
         }
-        animate_car(car,g)
+        animate_car(car, g)
       }
     }
-
   }
-
 }
