@@ -114,6 +114,12 @@ class Hero(initialPosition: Vector2,spd:Float=1)
     this.speed = speed
   }
 
+  def setPosition(new_vector: Vector2): Unit = {
+    move = true
+    this.lastPosition = new Vector2(new_vector.x, new_vector.y)
+    this.newPosition = new_vector
+  }
+
   /**
    * Do a step on the given direction
    *

@@ -1,5 +1,6 @@
 import ch.hevs.gdx2d.lib.GdxGraphics
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.maps.tiled.{TiledMapTile, TiledMapTileLayer, TiledMapTileSet}
 import com.badlogic.gdx.math.Vector2
 
@@ -17,7 +18,7 @@ object Road {
   var ROAD_CROSS_DOWN_TILE_ID = 1024
   var ROAD_CROSS_UP_TILE_ID = 976
 }
-class Road(x:Int,y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
+class Road(val x:Int,val y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
   var cars:ArrayBuffer[Car] = new ArrayBuffer[Car]()
   var tile_road:ArrayBuffer[ArrayBuffer[TiledMapTile]] = new ArrayBuffer[ArrayBuffer[TiledMapTile]]()
   var y_size:Int = 2
@@ -44,10 +45,10 @@ class Road(x:Int,y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
   }
 
   def add_to_layer():Unit = {
-    for(x_pos <- 0 until layer.getWidth;y_pos <- y until y+(y_size) ) {
+    for(x_pos <- 0 until layer.getWidth;y_pos <- y+(y_size-1) to y+y_size ) {
       var layer_cell = layer.getCell(x_pos,y_pos)
       var new_cell:TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
-      var new_tile = tile_road(x_pos)(y_pos-y)
+      var new_tile = tile_road(x_pos)(y_pos-(y+(y_size-1)))
       new_cell.setTile(new_tile)
       layer.setCell(x_pos,y_pos,new_cell)
     }
@@ -110,6 +111,7 @@ class Road(x:Int,y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
     car.animate(Gdx.graphics.getDeltaTime)
   }
   def drawCars(g: GdxGraphics):Unit = {
+    g.drawCircle(x,y,10,Color.RED)
     if (is_started) {
       for (car <- cars) {
         if (!car.isMoving) {
