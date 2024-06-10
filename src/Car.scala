@@ -166,7 +166,6 @@ class Car(initialPosition: Vector2,imageFile:String,sp:Double=1.5,initialDirecti
    * @param g Graphic object.
    */
   override def draw(g: GdxGraphics): Unit = {
-      println(position)
       g.drawRectangle(position.x + Car.SPRITE_WIDTH / 2.0f, position.y + Car.SPRITE_HEIGHT / 2.0f, Car.SPRITE_WIDTH, Car.SPRITE_HEIGHT, 0)
       g.drawTransformedPicture(position.x + Car.SPRITE_WIDTH / 2.0f, position.y + Car.SPRITE_HEIGHT / 2.0f, Car.SPRITE_WIDTH/2.0f, Car.SPRITE_HEIGHT, rotation_angle, 1.0f, car_bitmap)
   }

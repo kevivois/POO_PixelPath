@@ -44,12 +44,12 @@ class Road(x:Int,y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLayer) {
   }
 
   def add_to_layer():Unit = {
-    for(x <- 0 until layer.getWidth;y <- layer.getHeight-y_size until layer.getHeight ) {
-      var layer_cell = layer.getCell(x,y)
+    for(x_pos <- 0 until layer.getWidth;y_pos <- y until y+(y_size) ) {
+      var layer_cell = layer.getCell(x_pos,y_pos)
       var new_cell:TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
-      var new_tile = tile_road(x)(y-(layer.getHeight-y_size))
+      var new_tile = tile_road(x_pos)(y_pos-y)
       new_cell.setTile(new_tile)
-      layer.setCell(x,y,new_cell)
+      layer.setCell(x_pos,y_pos,new_cell)
     }
   }
   def start():Unit = {

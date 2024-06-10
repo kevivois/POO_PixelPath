@@ -60,18 +60,25 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
     roads = new ArrayBuffer[Road]()
 
     hero = new Hero(tiledLayer.getWidth/2,0)
+    hero.setSpeed(1.5f)
 
     initCells()
   }
   def initCells():Unit = {
-    for(i:Int <- 0 until tiledLayer.getTileWidth.toInt;y:Int <- 0 until tiledLayer.getTileHeight.toInt){
-      val cell = tiledLayer.getCell(i,y)
-      if(cell!=null) {
-        cell.getTile.getProperties.put("walkable", true)
-        cell.getTile.getProperties.put("speed", 1.5)
-      }
+    var y:Int = 0
+    while ( y < tiledLayer.getHeight){
+      var new_road = new Road(0,y,tiledSet,tiledLayer)
+      new_road.add_to_layer()
+      roads.addOne(new_road)
+      y+= new_road.y_size
     }
-  }
+    for(r <- roads){
+      r.start()
+    }
+    tiledMap.getLayers.remove(0)
+    tiledMap.getLayers.add(tiledLayer)
+    tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+    }
 
   def onGraphicRender(g: GdxGraphics): Unit = {
     g.clear()
@@ -85,7 +92,7 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
 
       // add grass
 
-      var grass_length_random = Random.between(1, 4)
+      var grass_length_random = Random.between(0, 4)
       for(i:Int <- 0 until grass_length_random){
         tiledLayer = LayerHelper.extendLayer(tiledLayer, 0, 1)
         var grass_tile = tiledSet.getTile(836)
@@ -147,11 +154,6 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
    * The tile to know the property
    * @return true if the property is set to "true", false otherwise
    */
-  private def isWalkable(tile: TiledMapTile): Boolean = {
-    if (tile == null) return false
-    val test = tile.getProperties.get("walkable")
-    test.toString.toBoolean
-  }
 
 
   /**
@@ -159,8 +161,8 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
    */
   private def manageHero(): Unit = {
     // Do nothing if hero is already moving
-    if (!hero.isMoving) {
       // Compute direction and next cell
+      if(hero.isMoving) return
       var nextCell: TiledMapTile = null
       var goalDirection = Hero.Direction.NULL
       if (keyStatus.get(Input.Keys.D)) {
@@ -179,15 +181,9 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
         goalDirection = Hero.Direction.DOWN
         nextCell = getTile(hero.getPosition, 0, -1)
       }
-      if (isWalkable(nextCell)) {
-        // God
+      if(nextCell != null) {
         hero.go(goalDirection)
       }
-      else {
-        // Face the wall
-        hero.turn(goalDirection)
-      }
-    }
     }
 
   // Manage keyboard events

@@ -38,19 +38,20 @@ class Hero(initialPosition: Vector2,spd:Float=1)
   /**
    * The currently selected sprite for animation
    */
-  private val textureX:Int = 0
-  private var textureY:Int = 1
-  private var speed:Float = spd
-  private var dt:Double = 0
-  private var currentFrame:Int = 0
-  private val nFrames:Int = 4
-  final private val FRAME_TIME:Float = 0.1f // Duration of each frime
+  private val textureX: Int = 0
+  private var textureY: Int = 1
+  private var speed: Float = spd
+  private var dt: Double = 0
+  private var currentFrame: Int = 0
+  private val nFrames: Int = 4
+  final private val FRAME_TIME: Float = 0.1f // Duration of each frime
 
   private var ss: Spritesheet = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
   private var lastPosition: Vector2 = new Vector2(initialPosition)
   private var newPosition: Vector2 = new Vector2(initialPosition)
   private var position: Vector2 = new Vector2(initialPosition)
   final private val img = new BitmapImage("data/images/pipe.png")
+  var current_direction: Hero.Direction.Value = null
   private var move = false
 
   /**
@@ -85,7 +86,7 @@ class Hero(initialPosition: Vector2,spd:Float=1)
     position = new Vector2(lastPosition)
     if (isMoving) {
       dt += elapsedTime
-      val alpha:Float = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
+      val alpha: Float = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
       position.interpolate(newPosition, alpha, Interpolation.linear)
     }
     else dt = 0
@@ -96,6 +97,7 @@ class Hero(initialPosition: Vector2,spd:Float=1)
         move = false
         lastPosition = new Vector2(newPosition)
         position = new Vector2(newPosition)
+        current_direction = null
       }
     }
   }
@@ -118,24 +120,25 @@ class Hero(initialPosition: Vector2,spd:Float=1)
    * @param direction The direction to go.
    */
   def go(direction: Hero.Direction.Value): Unit = {
-    move = true
-    direction match {
-      case Hero.Direction.RIGHT =>
-        newPosition.add(Hero.SPRITE_WIDTH, 0)
+      current_direction = direction
+      move = true
+      direction match {
+        case Hero.Direction.RIGHT =>
+          newPosition.add(Car.SPRITE_WIDTH, 0)
 
-      case Hero.Direction.LEFT =>
-        newPosition.add(-Hero.SPRITE_WIDTH, 0)
+        case Hero.Direction.LEFT =>
+          newPosition.add(-Car.SPRITE_WIDTH, 0)
 
-      case Hero.Direction.UP =>
-        newPosition.add(0, Hero.SPRITE_HEIGHT)
+        case Hero.Direction.UP =>
+          newPosition.add(0, Car.SPRITE_HEIGHT)
 
-      case Hero.Direction.DOWN =>
-        newPosition.add(0, -Hero.SPRITE_HEIGHT)
+        case Hero.Direction.DOWN =>
+          newPosition.add(0, -Car.SPRITE_HEIGHT)
 
-      case _ =>
+        case _ =>
 
-    }
-    turn(direction)
+      }
+      turn(direction)
   }
 
   /**
