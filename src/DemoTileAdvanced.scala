@@ -4,7 +4,7 @@ import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.lib.GdxGraphics
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.{Color, OrthographicCamera}
 import com.badlogic.gdx.graphics.g2d.{SpriteBatch, TextureRegion}
 import com.badlogic.gdx.maps.{MapObjects, MapProperties}
 import com.badlogic.gdx.maps.tiled._
@@ -30,10 +30,10 @@ object DemoTileAdvanced {
   }
 }
 
-class DemoTileAdvanced extends PortableApplication(1100,400) {
+class DemoTileAdvanced extends PortableApplication(700,600) {
   // key management
-  private var screen_width = 1100
-  private var screen_height = 400
+  private var screen_width = 700
+  private var screen_height = 600
   private val keyStatus = new util.TreeMap[Integer, Boolean]
   // character
   private var hero: Hero = null
@@ -47,6 +47,8 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
   private var current_score = 0
   private var max_score = 0
   private var max_y_position:Double = 0
+  private var current_max_y_position:Double = 0
+  private var old_score:Int = 0
   private var summed_up:Boolean = false
   private var gameover = false
   private var waiting_for_restart = false
@@ -125,7 +127,11 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
       if(gameover){
         gameover = false
         waiting_for_restart = true
-
+        max_y_position = Math.max(current_max_y_position, max_y_position)
+        max_score = Math.max(max_score, current_score)
+        old_score = current_score
+        current_max_y_position = 0
+        current_score = 0
         tiledLayer = new TiledMapTileLayer(inital_layer_width,inital_layer_height,tiledLayer.getTileWidth.toInt,tiledLayer.getTileHeight.toInt)
         roads.clear()
         hero = new Hero(tiledLayer.getWidth / 2, 0)
@@ -137,8 +143,8 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
           g.drawTransformedPicture(screen_width/2,screen_height/2,0,1f,new BitmapImage("data/images/main_screen.jpeg"))
         }
         if(waiting_for_restart){
-          g.drawString(screen_width/2,screen_height/2,"current score : "+current_score.toString)
-          g.drawString(screen_width/2,screen_height/2 -50,"all time record : "+ max_score.toString)
+          g.drawString(g.getCamera.position.x,g.getCamera.position.y,"current score : "+old_score.toString)
+          g.drawString(g.getCamera.position.x,g.getCamera.position.y - 50,"all time record : "+ max_score.toString)
         }
       }else {
         if (g.getCamera.position.y + g.getScreenHeight / 2 == tiledLayer.getHeight * tiledLayer.getTileHeight) {
@@ -174,9 +180,13 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
         // Draw the hero
         hero.animate(Gdx.graphics.getDeltaTime)
         hero.draw(g)
-
+        if(tiledLayer.getHeight*tiledLayer.getTileHeight > max_y_position && max_y_position != 0 && hero.getPosition.y < max_y_position){
+          g.drawString((g.getCamera.position.x-50),max_y_position.toFloat+15,s"your all time record  ${max_score} points !")
+          g.drawLine(0,max_y_position.toFloat,((tiledLayer.getTileWidth*tiledLayer.getWidth)-1),max_y_position.toFloat,Color.BLUE)
+        }
+        g.drawString(g.getCamera.position.x+g.getScreenWidth/2 - 160,g.getCamera.position.y+g.getScreenHeight/2,s"current score : ${current_score}")
         for (road <- roads) {
-          road.drawCars(g)
+          road.draw(g)
           if (road.is_touching(hero.getPosition, Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)) {
             gameover = true
             waiting_for_restart = true
@@ -220,18 +230,22 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
   private def manageHero(): Unit = {
     // Do nothing if hero is already moving
       // Compute direction and next cell
-      if(!hero.isMoving && summed_up){
-        if (hero.getPosition.y > max_y_position) {
-          max_y_position = hero.getPosition.y.toDouble
-          var is_on_road = false
+      if(!hero.isMoving){
+        if(hero.getPosition.y > current_max_y_position){
+          summed_up = false
+          current_max_y_position = hero.getPosition.y
+        }
+        if(!summed_up) {
+          var is_on_a_road = false
           for (r <- roads) {
-            if (max_y_position >= r.y && max_y_position <= (r.y+r.y_size)){
-              summed_up = true
-              is_on_road=true
+            var current_max_y_position_without_tile = current_max_y_position / tiledLayer.getTileHeight
+            if (current_max_y_position_without_tile > r.y && current_max_y_position_without_tile <= r.y + r.y_size) {
+              is_on_a_road = true
             }
           }
-          if (is_on_road) {
-            current_score+=1
+          if (is_on_a_road) {
+            current_score += 1
+            summed_up = true
           }
         }
       }
@@ -256,7 +270,6 @@ class DemoTileAdvanced extends PortableApplication(1100,400) {
       }
       if(nextCell != null) {
         hero.go(goalDirection)
-        summed_up=true
       }
     }
 

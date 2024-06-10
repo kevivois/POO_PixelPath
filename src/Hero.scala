@@ -1,18 +1,8 @@
-
-import ch.hevs.gdx2d.components.bitmaps.BitmapImage
-import ch.hevs.gdx2d.components.bitmaps.Spritesheet
+import ch.hevs.gdx2d.components.bitmaps.{BitmapImage, Spritesheet}
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
-import com.badlogic.gdx.math.Interpolation
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.{Interpolation, Vector2}
 
-
-/**
- * Character for the demo.
- *
- * @author Alain Woeffray (woa)
- * @author Pierre-André Mudry (mui)
- */
 object Hero {
   object Direction extends Enumeration {
     type Direction = Value
@@ -23,73 +13,39 @@ object Hero {
   val SPRITE_HEIGHT = 32
 }
 
-class Hero(initialPosition: Vector2,spd:Float=1)
+class Hero(initialPosition: Vector2, spd: Float = 1) extends DrawableObject {
+  private val ss = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
+  private val FRAME_TIME = 0.1f
+  private val nFrames = 4
 
-/**
- * Create the hero at the start position
- *
- * @param initialPosition Start position [px] on the map.
- */
-  extends DrawableObject {
-  lastPosition = new Vector2(initialPosition)
-  newPosition = new Vector2(initialPosition)
-  position = new Vector2(initialPosition)
-  ss = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
-  /**
-   * The currently selected sprite for animation
-   */
-  private val textureX: Int = 0
-  private var textureY: Int = 1
-  private var speed: Float = spd
-  private var dt: Double = 0
-  private var currentFrame: Int = 0
-  private val nFrames: Int = 4
-  final private val FRAME_TIME: Float = 0.1f // Duration of each frime
-
-  private var ss: Spritesheet = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
-  private var lastPosition: Vector2 = new Vector2(initialPosition)
-  private var newPosition: Vector2 = new Vector2(initialPosition)
-  private var position: Vector2 = new Vector2(initialPosition)
-  final private val img = new BitmapImage("data/images/pipe.png")
-  var current_direction: Hero.Direction.Value = null
+  private var lastPosition = new Vector2(initialPosition)
+  private var newPosition = new Vector2(initialPosition)
+  private var position = new Vector2(initialPosition)
+  private var textureY = 1
+  private var speed = spd
+  private var dt = 0.0
+  private var currentFrame = 0
+  private var currentDirection: Hero.Direction.Value = Hero.Direction.NULL
   private var move = false
 
-  /**
-   * Create the hero at the start position (0,0)
-   */
-  def this() {
-    this(new Vector2(0, 0))
-  }
+  def this() = this(new Vector2(0, 0))
 
-  /**
-   * Create the hero at the given start tile.
-   *
-   * @param x Column
-   * @param y Line
-   */
-  def this(x: Int, y: Int) {
-    this(new Vector2(Hero.SPRITE_WIDTH * x, Hero.SPRITE_HEIGHT * y))
-  }
+  def this(x: Int, y: Int) = this(new Vector2(Hero.SPRITE_WIDTH * x, Hero.SPRITE_HEIGHT * y))
 
-  /**
-   * @return the current position of the hero on the map.
-   */
-  def getPosition: Vector2 = this.position
+  def getPosition: Vector2 = position
 
-  /**
-   * Update the position and the texture of the hero.
-   *
-   * @param elapsedTime The time [s] elapsed since the last time which this method was called.
-   */
   def animate(elapsedTime: Double): Unit = {
     val frameTime = FRAME_TIME / speed
     position = new Vector2(lastPosition)
-    if (isMoving) {
+
+    if (move) {
       dt += elapsedTime
-      val alpha: Float = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
+      val alpha = ((dt + frameTime * currentFrame) / (frameTime * nFrames)).toFloat
       position.interpolate(newPosition, alpha, Interpolation.linear)
+    } else {
+      dt = 0
     }
-    else dt = 0
+
     if (dt > frameTime) {
       dt -= frameTime
       currentFrame = (currentFrame + 1) % nFrames
@@ -97,87 +53,45 @@ class Hero(initialPosition: Vector2,spd:Float=1)
         move = false
         lastPosition = new Vector2(newPosition)
         position = new Vector2(newPosition)
-        current_direction = null
+        currentDirection = Hero.Direction.NULL
       }
     }
   }
 
-  /**
-   * @return True if the hero is actually doing a step.
-   */
   def isMoving: Boolean = move
 
-  /**
-   * @param speed The new speed of the hero.
-   */
-  def setSpeed(speed: Float): Unit = {
-    this.speed = speed
-  }
+  def setSpeed(speed: Float): Unit = this.speed = speed
 
-  def setPosition(new_vector: Vector2): Unit = {
+  def setPosition(newVector: Vector2): Unit = {
     move = true
-    this.lastPosition = new Vector2(new_vector.x, new_vector.y)
-    this.newPosition = new_vector
+    lastPosition = new Vector2(newVector.x, newVector.y)
+    newPosition = newVector
   }
 
-  /**
-   * Do a step on the given direction
-   *
-   * @param direction The direction to go.
-   */
   def go(direction: Hero.Direction.Value): Unit = {
-      current_direction = direction
-      move = true
-      direction match {
-        case Hero.Direction.RIGHT =>
-          newPosition.add(Car.SPRITE_WIDTH, 0)
-
-        case Hero.Direction.LEFT =>
-          newPosition.add(-Car.SPRITE_WIDTH, 0)
-
-        case Hero.Direction.UP =>
-          newPosition.add(0, Car.SPRITE_HEIGHT)
-
-        case Hero.Direction.DOWN =>
-          newPosition.add(0, -Car.SPRITE_HEIGHT)
-
-        case _ =>
-
-      }
-      turn(direction)
+    currentDirection = direction
+    move = true
+    direction match {
+      case Hero.Direction.RIGHT => newPosition.add(Hero.SPRITE_WIDTH, 0)
+      case Hero.Direction.LEFT => newPosition.add(-Hero.SPRITE_WIDTH, 0)
+      case Hero.Direction.UP => newPosition.add(0, Hero.SPRITE_HEIGHT)
+      case Hero.Direction.DOWN => newPosition.add(0, -Hero.SPRITE_HEIGHT)
+      case _ =>
+    }
+    turn(direction)
   }
 
-  /**
-   * Turn the hero on the given direction without do any step.
-   *
-   * @param direction The direction to turn.
-   */
   def turn(direction: Hero.Direction.Value): Unit = {
-    direction match {
-      case Hero.Direction.RIGHT =>
-        textureY = 2
-
-      case Hero.Direction.LEFT =>
-        textureY = 1
-
-      case Hero.Direction.UP =>
-        textureY = 3
-
-      case Hero.Direction.DOWN =>
-        textureY = 0
-
-      case _ =>
-
+    textureY = direction match {
+      case Hero.Direction.RIGHT => 2
+      case Hero.Direction.LEFT => 1
+      case Hero.Direction.UP => 3
+      case Hero.Direction.DOWN => 0
+      case _ => textureY
     }
   }
 
-  /**
-   * Draw the character on the graphic object.
-   *
-   * @param g Graphic object.
-   */
   override def draw(g: GdxGraphics): Unit = {
-    g.drawRectangle(position.x+Hero.SPRITE_WIDTH/2,position.y+Hero.SPRITE_HEIGHT/2,Hero.SPRITE_WIDTH.toFloat,Hero.SPRITE_HEIGHT.toFloat,0)
     g.draw(ss.sprites(textureY)(currentFrame), position.x, position.y)
   }
 }

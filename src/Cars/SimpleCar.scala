@@ -1,4 +1,5 @@
-import com.badlogic.gdx.math.Vector2
+package Cars
+
 object SimpleCar {
   val FILEPATH = "data/images/characters/car/Blackout.png"
 }
