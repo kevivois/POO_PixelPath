@@ -146,7 +146,8 @@ class MainPixelPath extends PortableApplication(950,600) {
       }
       if(waiting_for_restart || waiting_for_first_start ){
         if(waiting_for_first_start){
-          g.drawTransformedPicture(screen_width/2,screen_height/2,0,1f,new BitmapImage("data/images/main_screen.jpeg"))
+          var btm = new BitmapImage("data/images/main_screen.jpeg")
+          g.drawTransformedPicture(screen_width/2,screen_height/2,0,0.5f,btm)
         }
         if(waiting_for_restart){
           g.drawString(g.getCamera.position.x,g.getCamera.position.y,"current score : "+old_score.toString)

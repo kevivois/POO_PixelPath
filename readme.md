@@ -69,3 +69,22 @@ Le but principal de Pixel Path est de voir combien de temps vous pouvez survivre
 - **MainPixelPath**: MainPixelPath est la classe principale du projet. Elle agit comme le point d'entrée de l'application, orchestrant l'initialisation et la gestion globale du jeu. Cette classe est responsable de la configuration initiale de l'environnement de jeu, de la gestion des événements de rendu et d'entrée, ainsi que de la coordination des différentes parties du jeu, telles que les entités de voiture et les routes.
 
 ## Images du jeu
+- **Lancement du jeu**
+
+- **Lancement de la partie**
+
+<img src="data/images/readme/character_spawn.png" width="650" height="500" />
+
+- **Mouvement du personnage**
+
+<img src="data/images/readme/char_mov.png" width="650" height="500" />
+
+- **Mort du personnage**
+
+<img src="data/images/readme/char_death.png" width="650" height="500" />
+
+- **Respawn avec record**
+
+<img src="data/images/readme/char_respawn_record.png" width="650" height="500" />
+
+
