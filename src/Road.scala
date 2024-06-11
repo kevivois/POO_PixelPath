@@ -32,7 +32,7 @@ class Road(val x:Int,val y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLay
     for(car:Car <- cars){
       var rct1:Rectangle = LayerHelper.getRectangle(v.x.toInt-width/2,v.y.toInt-height/2,width,height)
       var rct2:Rectangle = LayerHelper.getRectangle(car.getPosition.x.toInt-Cars.Car.SPRITE_WIDTH/2,car.getPosition.y.toInt-Cars.Car.SPRITE_HEIGHT/2,Cars.Car.SPRITE_WIDTH,Cars.Car.SPRITE_HEIGHT)
-      if(LayerHelper.checkOverlap(rct1,rct2,5)){
+      if(LayerHelper.checkOverlap(rct1,rct2,3)){
         return true
       }
     }

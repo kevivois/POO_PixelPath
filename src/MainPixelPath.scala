@@ -30,7 +30,7 @@ object MainPixelPath {
   }
 }
 
-class MainPixelPath extends PortableApplication(700,600) {
+class MainPixelPath extends PortableApplication(950,600) {
   // key management
   private val screen_width:Int = 700
   private val screen_height = 600
@@ -88,7 +88,7 @@ class MainPixelPath extends PortableApplication(700,600) {
     var y: Int = 0
     while (y < tiledLayer.getHeight) {
       if (count % 2 == 0) {
-        var grass_length:Int = Random.between(0,3)
+        var grass_length:Int = Random.between(0,2)
           for(xi <- 0 until tiledLayer.getWidth;yi:Int <- 0 until grass_length){
             var new_cell:TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
             new_cell.setTile(tiledSet.getTile(836))
@@ -160,7 +160,7 @@ class MainPixelPath extends PortableApplication(700,600) {
 
           // add grass
 
-          var grass_length_random:Int = Random.between(0, 4)
+          var grass_length_random:Int = Random.between(0, 3)
           for (i: Int <- 0 until grass_length_random) {
             tiledLayer = LayerHelper.extendLayer(tiledLayer, 0, 1)
             var grass_tile = tiledSet.getTile(836)
@@ -185,7 +185,7 @@ class MainPixelPath extends PortableApplication(700,600) {
         hero.animate(Gdx.graphics.getDeltaTime)
         hero.draw(g)
         if(tiledLayer.getHeight*tiledLayer.getTileHeight > max_y_position && max_y_position != 0 && hero.getPosition.y < max_y_position){
-          g.drawString((g.getCamera.position.x-50),max_y_position.toFloat+15,s"your all time record  ${max_score} points !")
+          g.drawString((g.getCamera.position.x-50),max_y_position.toFloat+15,s"your all time record  y=${max_y_position}  !")
           g.drawLine(0,max_y_position.toFloat,((tiledLayer.getTileWidth*tiledLayer.getWidth)-1),max_y_position.toFloat,Color.BLUE)
         }
         g.drawString(g.getCamera.position.x+g.getScreenWidth/2 - 160,g.getCamera.position.y+g.getScreenHeight/2,s"current score : ${current_score}")
@@ -242,7 +242,7 @@ class MainPixelPath extends PortableApplication(700,600) {
         if(!summed_up) {
           var is_on_a_road = false
           for (r <- roads) {
-            var current_max_y_position_without_tile = current_max_y_position / tiledLayer.getTileHeight
+            val current_max_y_position_without_tile = current_max_y_position / tiledLayer.getTileHeight
             if (current_max_y_position_without_tile > r.y && current_max_y_position_without_tile <= r.y + r.y_size) {
               is_on_a_road = true
             }

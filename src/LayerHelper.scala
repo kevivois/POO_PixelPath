@@ -22,11 +22,6 @@ object LayerHelper {
     }
   }
 
-  def getGrassTilesOfLength(tileSet: TiledMapTileSet, length: Int): ArrayBuffer[TiledMapTile] = {
-    val grassTile = tileSet.getTile(876)
-    ArrayBuffer.fill(length)(grassTile)
-  }
-
   def checkOverlap(r1: Rectangle, r2: Rectangle, delta: Int = 0): Boolean = {
     !(r1.x + r1.width - delta < r2.x || r1.y + r1.height - delta < r2.y || r1.x - delta > r2.x + r2.width || r1.y + delta > r2.y + r2.height)
   }
