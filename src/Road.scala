@@ -70,7 +70,7 @@ class Road(val x:Int,val y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLay
   private def build_road_tile():Unit = {
     build_tiles_properties()
     for (_ <- 0 until layer.getWidth) {
-      val isCrossRoad = Random.between(0, 7) == 6
+      val isCrossRoad = Random.between(0, 4) == 3
       val tile = ArrayBuffer[TiledMapTile]()
       if (isCrossRoad) {
         tile.append(tileset.getTile(Road.ROAD_CROSS_DOWN_TILE_ID))

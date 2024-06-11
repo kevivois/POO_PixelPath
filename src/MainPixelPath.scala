@@ -59,6 +59,8 @@ class MainPixelPath extends PortableApplication(950,600) {
 
   def onInit(): Unit = {
 
+    setTitle("Pixel Path")
+
     zoom = 1
     // init keys status
     keyStatus.put(Input.Keys.UP, false)
@@ -98,7 +100,7 @@ class MainPixelPath extends PortableApplication(950,600) {
 
       } else {
         var new_road:Road = new Road(0, y, tiledSet, tiledLayer)
-        if (y + new_road.y_size-1 < tiledLayer.getHeight) {
+        if (y + new_road.y_size < tiledLayer.getHeight) {
           new_road.add_to_layer()
           roads.addOne(new_road)
         }
