@@ -24,16 +24,16 @@ import scala.util.Random
  * @author Pierre-André Mudry (mui)
  * @author Marc Pignat (pim)
  */
-object DemoTileAdvanced {
+object MainPixelPath {
   def main(args: Array[String]): Unit = {
-    new DemoTileAdvanced
+    new MainPixelPath
   }
 }
 
-class DemoTileAdvanced extends PortableApplication(700,600) {
+class MainPixelPath extends PortableApplication(700,600) {
   // key management
-  private var screen_width = 700
-  private var screen_height = 600
+  private val screen_width:Int = 700
+  private val screen_height = 600
   private val keyStatus = new util.TreeMap[Integer, Boolean]
   // character
   private var hero: Hero = null
@@ -44,18 +44,18 @@ class DemoTileAdvanced extends PortableApplication(700,600) {
   private var tiledSet:TiledMapTileSet = null
   private var zoom = .0
   private var roads:ArrayBuffer[Road] =null
-  private var current_score = 0
-  private var max_score = 0
+  private var current_score:Int = 0
+  private var max_score:Int = 0
   private var max_y_position:Double = 0
   private var current_max_y_position:Double = 0
   private var old_score:Int = 0
   private var summed_up:Boolean = false
-  private var gameover = false
-  private var waiting_for_restart = false
-  private var waiting_for_first_start=true
+  private var gameover:Boolean = false
+  private var waiting_for_restart:Boolean  = false
+  private var waiting_for_first_start:Boolean = true
   private var clicked_on_space:Boolean = false
-  private var inital_layer_width = 0
-  private var inital_layer_height = 0
+  private var inital_layer_width:Int = 0
+  private var inital_layer_height:Int = 0
 
   def onInit(): Unit = {
 
@@ -78,41 +78,54 @@ class DemoTileAdvanced extends PortableApplication(700,600) {
 
     initCells()
   }
-  var b = 0
+  var count:Int = 0
   def initCells():Unit = {
     for(xi <- 0 until tiledLayer.getWidth;yi:Int <- 0 until tiledLayer.getHeight){
-      var new_cell = new TiledMapTileLayer.Cell()
+      val new_cell:TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
       new_cell.setTile(tiledSet.getTile(836))
       tiledLayer.setCell(xi,yi, new_cell)
     }
     var y: Int = 0
     while (y < tiledLayer.getHeight) {
-      if (b % 2 == 0) {
-        var grass_length = Random.between(0,3)
+      if (count % 2 == 0) {
+        var grass_length:Int = Random.between(0,3)
           for(xi <- 0 until tiledLayer.getWidth;yi:Int <- 0 until grass_length){
-            var new_cell = new TiledMapTileLayer.Cell()
+            var new_cell:TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
             new_cell.setTile(tiledSet.getTile(836))
             tiledLayer.setCell(xi,y+yi,new_cell)
         }
         y+=grass_length
 
       } else {
-        var new_road = new Road(0, y, tiledSet, tiledLayer)
+        var new_road:Road = new Road(0, y, tiledSet, tiledLayer)
         if (y + new_road.y_size-1 < tiledLayer.getHeight) {
           new_road.add_to_layer()
           roads.addOne(new_road)
         }
         y += new_road.y_size+1
       }
-      b += 1
+      count += 1
     }
-      for (r <- roads) {
+      for (r:Road <- roads) {
         r.start()
       }
       tiledMap.getLayers.remove(0)
       tiledMap.getLayers.add(tiledLayer)
       tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
   }
+
+    def reset_game():Unit = {
+      max_y_position = Math.max(current_max_y_position, max_y_position)
+      max_score = Math.max(max_score, current_score)
+      old_score = current_score
+      current_max_y_position = 0
+      current_score = 0
+      tiledLayer = new TiledMapTileLayer(inital_layer_width, inital_layer_height, tiledLayer.getTileWidth.toInt, tiledLayer.getTileHeight.toInt)
+      roads.clear()
+      hero = new Hero(tiledLayer.getWidth / 2, 0)
+      hero.setSpeed(1.5f)
+      initCells()
+    }
 
     def onGraphicRender(g: GdxGraphics): Unit = {
       g.clear()
@@ -127,16 +140,7 @@ class DemoTileAdvanced extends PortableApplication(700,600) {
       if(gameover){
         gameover = false
         waiting_for_restart = true
-        max_y_position = Math.max(current_max_y_position, max_y_position)
-        max_score = Math.max(max_score, current_score)
-        old_score = current_score
-        current_max_y_position = 0
-        current_score = 0
-        tiledLayer = new TiledMapTileLayer(inital_layer_width,inital_layer_height,tiledLayer.getTileWidth.toInt,tiledLayer.getTileHeight.toInt)
-        roads.clear()
-        hero = new Hero(tiledLayer.getWidth / 2, 0)
-        hero.setSpeed(1.5f)
-        initCells()
+        reset_game()
       }
       if(waiting_for_restart || waiting_for_first_start ){
         if(waiting_for_first_start){
@@ -156,12 +160,12 @@ class DemoTileAdvanced extends PortableApplication(700,600) {
 
           // add grass
 
-          var grass_length_random = Random.between(0, 4)
+          var grass_length_random:Int = Random.between(0, 4)
           for (i: Int <- 0 until grass_length_random) {
             tiledLayer = LayerHelper.extendLayer(tiledLayer, 0, 1)
             var grass_tile = tiledSet.getTile(836)
             for (x: Int <- 0 until tiledLayer.getWidth; y: Int <- tiledLayer.getHeight - 1 until tiledLayer.getHeight) {
-              var new_cell = new TiledMapTileLayer.Cell()
+              var new_cell:TiledMapTileLayer.Cell = new TiledMapTileLayer.Cell()
               new_cell.setTile(grass_tile)
               tiledLayer.setCell(x, y, new_cell)
             }
