@@ -30,18 +30,18 @@ object Car {
 }
 
 class Car(initialPosition: Vector2, imageFile: String, sp: Double = 1.5, initialDirection: Int = 1) extends DrawableObject {
-  private var carBitmap = new BitmapImage(imageFile)
-  private var lastPosition = new Vector2(initialPosition)
-  private var newPosition = new Vector2(initialPosition)
-  private var position = new Vector2(initialPosition)
+  private val carBitmap:BitmapImage = new BitmapImage(imageFile)
+  private var lastPosition:Vector2 = new Vector2(initialPosition)
+  private var newPosition:Vector2 = new Vector2(initialPosition)
+  private var position:Vector2 = new Vector2(initialPosition)
   private var speed: Float = sp.toFloat
   private var dt: Double = 0
   private var currentFrame: Int = 0
   private val nFrames: Int = 4
   private val FRAME_TIME: Float = 0.1f
-  private var move = false
-  var rotationAngle = 0
-  var direction = initialDirection
+  private var move:Boolean = false
+  var rotationAngle:Int = 0
+  var direction:Int = initialDirection
 
   def this(x: Int, y: Int, imageFile: String, speed: Double, initialDirection: Int) {
     this(new Vector2(Car.SPRITE_WIDTH * x, Car.SPRITE_HEIGHT * y), imageFile, speed, initialDirection)

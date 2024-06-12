@@ -29,10 +29,10 @@ class Road(val x:Int,val y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLay
 
 
   def is_touching(v:Vector2,width:Int,height:Int):Boolean = {
+    val rct1:Rectangle = LayerHelper.getRectangle(v.x.toInt,v.y.toInt,width,height)
     for(car:Car <- cars){
-      var rct1:Rectangle = LayerHelper.getRectangle(v.x.toInt-width/2,v.y.toInt-height/2,width,height)
-      var rct2:Rectangle = LayerHelper.getRectangle(car.getPosition.x.toInt-Cars.Car.SPRITE_WIDTH/2,car.getPosition.y.toInt-Cars.Car.SPRITE_HEIGHT/2,Cars.Car.SPRITE_WIDTH,Cars.Car.SPRITE_HEIGHT)
-      if(LayerHelper.checkOverlap(rct1,rct2,3)){
+      val rct2:Rectangle = LayerHelper.getRectangle(car.getPosition.x.toInt,car.getPosition.y.toInt,Cars.Car.SPRITE_WIDTH,Cars.Car.SPRITE_HEIGHT)
+      if(LayerHelper.checkOverlap(rct1,rct2,1,1)){
         return true
       }
     }
@@ -104,6 +104,8 @@ class Road(val x:Int,val y:Int,tileset:TiledMapTileSet,var layer:TiledMapTileLay
   def draw(g: GdxGraphics):Unit = {
     if (is_started) {
       for (car <- cars) {
+        val rct1:Rectangle = LayerHelper.getRectangle(car.getPosition.x.toInt,car.getPosition.y.toInt,Car.SPRITE_WIDTH,Car.SPRITE_HEIGHT)
+        g.drawRectangle(rct1.x+rct1.width/2,rct1.y+rct1.height/2,rct1.width,rct1.height,0)
         if (!car.isMoving) {
           if (car.direction == 1) {
             //var nextTile = LayerHelper.getTile(car.getPosition, car.direction, 0, layer,Car.SPRITE_WIDTH,Car.SPRITE_HEIGHT)

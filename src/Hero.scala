@@ -14,19 +14,19 @@ object Hero {
 }
 
 class Hero(initialPosition: Vector2, spd: Float = 1) extends DrawableObject {
-  private val ss = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
-  private val FRAME_TIME = 0.1f
-  private val nFrames = 4
+  private val ss:Spritesheet = new Spritesheet("data/images/lumberjack_sheet32.png", Hero.SPRITE_WIDTH, Hero.SPRITE_HEIGHT)
+  private val FRAME_TIME:Float = 0.1f
+  private val nFrames:Int = 4
 
-  private var lastPosition = new Vector2(initialPosition)
-  private var newPosition = new Vector2(initialPosition)
-  private var position = new Vector2(initialPosition)
-  private var textureY = 1
-  private var speed = spd
-  private var dt = 0.0
-  private var currentFrame = 0
+  private var lastPosition:Vector2 = new Vector2(initialPosition)
+  private var newPosition:Vector2 = new Vector2(initialPosition)
+  private var position:Vector2 = new Vector2(initialPosition)
+  private var textureY:Int = 1
+  private var speed:Float = spd
+  private var dt:Double = 0.0
+  private var currentFrame:Int = 0
   private var currentDirection: Hero.Direction.Value = Hero.Direction.NULL
-  private var move = false
+  private var move:Boolean = false
 
   def this() = this(new Vector2(0, 0))
 

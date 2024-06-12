@@ -22,8 +22,8 @@ object LayerHelper {
     }
   }
 
-  def checkOverlap(r1: Rectangle, r2: Rectangle, delta: Int = 0): Boolean = {
-    !(r1.x + r1.width - delta < r2.x || r1.y + r1.height - delta < r2.y || r1.x - delta > r2.x + r2.width || r1.y + delta > r2.y + r2.height)
+  def checkOverlap(r1: Rectangle, r2: Rectangle, deltaX: Int = 0,deltaY: Int = 0): Boolean = {
+    !(r1.x + r1.width - deltaX < r2.x || r1.y + r1.height - deltaY < r2.y || r1.x + deltaX > r2.x + r2.width || r1.y + deltaY > r2.y + r2.height)
   }
 
   def getRectangle(x: Int, y: Int, width: Int, height: Int): Rectangle = {
